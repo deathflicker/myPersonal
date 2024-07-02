@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis Wake Word Detection</title>
+</head>
+<body style="text-align: center; background-color:black;">
+	<img src="https://cdn.dribbble.com/users/32512/screenshots/6495831/face_id2_effect_by_gleb.gif" style="width: 100%; height: 100%;" alt="kalki">
+  <script>
+  	var wake = false;
+    var counter = 0;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    var test;
+
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    let previousTranscript = "";
+
+    function startRecognition() {
+      recognition.onend = () => {
+        console.log("Speech recognition stopped.");
+        setTimeout(() => startRecognition(), 0); // Restart after 500 milliseconds
+      };
+      recognition.start();
+    }
+
+    startRecognition();
+
+    recognition.onresult = (event) => {
+      const last = event.results.length - 1;
+      const transcript = event.results[last][0].transcript;
+
+      if (transcript !== previousTranscript) {
+        previousTranscript = transcript;
+        if (transcript.toLowerCase().includes("jarvis")) {
+          console.log("wake word detected");
+          wake = true;
+        }
+        else{
+        	if(wake){
+            
+            }
+            else{
+            	recognition.abort();
+            }
+        }
+        test = transcript.toLowerCase();
+      }
+      
+      if(wake){
+      	if(counter==0){
+         counter=1;
+         return;
+        }
+        else{
+         counter = 0;
+         console.log("prompt"+test);
+         wake = false;
+        }
+      }
+    };
+    
+
+    recognition.onerror = (error) => {
+    	recognition.abort();
+    };
+  </script>
+</body>
+</html>
