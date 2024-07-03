@@ -65,7 +65,8 @@
     
 
     recognition.onerror = (error) => {
-    	recognition.abort();
+    	console.log(error);
+	recognition.abort();
     };
   </script>
 </body>
