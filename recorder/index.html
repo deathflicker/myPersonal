@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Audio</title>
+</head>
+<body>
+    <button id="startButton">Start Recording</button>
+    <button id="stopButton" disabled>Stop Recording</button>
+    <audio id="recordedAudio" controls></audio>
+
+    <script>
+const startButton = document.getElementById('startButton');
+const stopButton = document.getElementById('stopButton');
+const recordedAudio = document.getElementById('recordedAudio');
+
+let mediaRecorder;
+let audioStream;
+
+startButton.addEventListener('click', startRecording);
+stopButton.addEventListener('click', stopRecording);
+
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      audioStream = stream;
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorder.start();
+      startButton.disabled = true;
+      stopButton.disabled = false;
+    })
+    .catch(err => console.error(err));
+}
+
+function stopRecording() {
+  mediaRecorder.stop();
+}
+
+function handleDataAvailable(e) {
+  const audioBlob = new Blob([e.data], { type: 'audio/webm' });
+  recordedAudio.src = URL.createObjectURL(audioBlob);
+  recordedAudio.controls = true;
+  recordedAudio.play();
+  stopButton.disabled = true;
+  startButton.disabled = false;
+  audioStream.getTracks().forEach(track => track.stop());
+}
+    </script>
+</body>
+</html>
